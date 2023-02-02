@@ -5,11 +5,11 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class KafkaService implements Closeable {
     private final KafkaConsumer<String, String> consumer;
@@ -19,6 +19,12 @@ public class KafkaService implements Closeable {
         this.parse = parse;
         this.consumer = new KafkaConsumer<>(properties(groupId));
         consumer.subscribe(Collections.singletonList(topic));
+    }
+
+    public KafkaService(String groupId, Pattern topic, ConsumerFunction parse) {
+        this.parse = parse;
+        this.consumer = new KafkaConsumer<>(properties(groupId));
+        consumer.subscribe(topic);
     }
 
     public void run() {
