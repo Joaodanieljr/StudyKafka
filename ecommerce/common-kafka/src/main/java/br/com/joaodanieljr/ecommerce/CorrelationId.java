@@ -6,12 +6,12 @@ public class CorrelationId {
 
     private final String id;
 
-    public CorrelationId(String id) {
-        this.id = id;
+    public CorrelationId(String title) {
+        this.id = title + "("  + UUID.randomUUID().toString() + ")";
     }
 
-    public CorrelationId() {
-        id = UUID.randomUUID().toString();
+    public CorrelationId continueWith(String title){
+        return new CorrelationId(id + "-" + title);
     }
 
     @Override

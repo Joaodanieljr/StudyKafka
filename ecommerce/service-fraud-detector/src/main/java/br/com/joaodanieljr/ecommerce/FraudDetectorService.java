@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutionException;
 
 public class FraudDetectorService {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
         var fraudService = new FraudDetectorService();
         try (var service = new KafkaService<>(FraudDetectorService.class.getSimpleName(),
                 "ECOMMERCE_NEW_ORDER",
@@ -21,26 +21,28 @@ public class FraudDetectorService {
 
     private final KafkaDispatcher<Order> orderDispatcher = new KafkaDispatcher<>();
 
-    private void parse(ConsumerRecord<String, Order> record) throws ExecutionException, InterruptedException {
+    private void parse(ConsumerRecord<String, Message<Order>> record) throws ExecutionException, InterruptedException {
         System.out.println("------------------------------------------");
         System.out.println("Processing new order, checking for fraud");
         System.out.println(record.key());
         System.out.println(record.value());
         System.out.println(record.partition());
         System.out.println(record.offset());
+        var message = record.value();
+        var id = (CorrelationId) message.getId();
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             // ignoring
             e.printStackTrace();
         }
-        var order = record.value();
+        var order =(Order) message.getPayload();
         if (isFraud(order)){
             System.out.println("Order is a fraud: " + order);
-            orderDispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(), order);
+            orderDispatcher.send("ECOMMERCE_ORDER_REJECTED", order.getEmail(),id.continueWith(FraudDetectorService.class.getSimpleName()), order);
         } else {
             System.out.println("Order processed : " + order);
-            orderDispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(), order);
+            orderDispatcher.send("ECOMMERCE_ORDER_APPROVED", order.getEmail(),id.continueWith(FraudDetectorService.class.getSimpleName()), order);
         }
     }
 
