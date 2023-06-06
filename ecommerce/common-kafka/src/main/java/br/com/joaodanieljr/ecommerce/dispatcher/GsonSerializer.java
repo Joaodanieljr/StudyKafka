@@ -1,5 +1,6 @@
-package br.com.joaodanieljr.ecommerce;
+package br.com.joaodanieljr.ecommerce.dispatcher;
 
+import br.com.joaodanieljr.ecommerce.MessageAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.kafka.common.serialization.Serializer;

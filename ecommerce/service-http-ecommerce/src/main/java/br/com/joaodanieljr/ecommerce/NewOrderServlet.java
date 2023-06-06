@@ -1,5 +1,6 @@
 package br.com.joaodanieljr.ecommerce;
 
+import br.com.joaodanieljr.ecommerce.dispatcher.KafkaDispatcher;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
