@@ -31,7 +31,7 @@ public class KafkaService<T> implements Closeable {
         consumer.subscribe(topic);
     }
 
-    private KafkaService(ConsumerFunction<T> parse, String groupId, Class<T> type, Map<String, String> properties) {
+    public KafkaService(ConsumerFunction<T> parse, String groupId, Class<T> type, Map<String, String> properties) {
         this.parse = parse;
         this.consumer = new KafkaConsumer<>(getProperties(type, groupId, properties));
     }
@@ -66,6 +66,7 @@ public class KafkaService<T> implements Closeable {
         properties.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         properties.setProperty(ConsumerConfig.CLIENT_ID_CONFIG, UUID.randomUUID().toString());
         properties.putAll(overrideProperties);
+        properties.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG,"latest");
         return properties;
     }
 
